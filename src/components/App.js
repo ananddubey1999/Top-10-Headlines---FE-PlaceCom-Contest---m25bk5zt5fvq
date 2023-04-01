@@ -1,58 +1,61 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import "../styles/App.css";
 
-function App() {
-  const [category, setCategory] = useState('general');
-  const [news, setNews] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+const App = () => {
+  const [category, setCategory] = useState("general");
+  const [newsData, setNewsData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
-    fetch(`https://gnews.io/api/v4/top-headlines?category=${category}&apikey=[API_KEY]&max=10&lang=en`)
-      .then(res => res.json())
-      .then(data => {
-        setNews(data.articles);
-        setIsLoading(false);
+    setLoading(true);
+    fetch(
+      `https://gnews.io/api/v4/top-headlines?category=${category}&apikey=[API_KEY]&max=10&lang=en`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setNewsData(data.articles);
+        setLoading(false);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   }, [category]);
 
-  const handleCategoryChange = (event) => {
-    setCategory(event.target.value);
-  }
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+  };
 
   return (
-    <div>
+    <div id="main">
       <h1 className="heading">Top 10 {category} news</h1>
-      <div>
-        <label htmlFor="category">Select a category:</label>
-        <select id="category" name="category" value={category} onChange={handleCategoryChange}>
-          <option value="general">General</option>
-          <option value="business">Business</option>
-          <option value="entertainment">Entertainment</option>
-          <option value="health">Health</option>
-          <option value="science">Science</option>
-          <option value="sports">Sports</option>
-          <option value="technology">Technology</option>
-        </select>
-      </div>
-      {isLoading ? (
-        <p className="loader">Loading...</p>
-      ) : (
+      <select value={category} onChange={handleCategoryChange}>
+        <option value="general">General</option>
+        <option value="business">Business</option>
+        <option value="sports">Sports</option>
+        <option value="technology">Technology</option>
+        <option value="world">World</option>
+        <option value="entertainment">Entertainment</option>
+        <option value="science">Science</option>
+      </select>
+      {loading && <p className="loader">Loading...</p>}
+      {!loading && (
         <ol>
-          {news.map((article) => (
-            <li key={article.url}>
-              <img src={article.image} alt={article.title} />
-              <div>
-                <h2>{article.title}</h2>
-                <p>{article.description}</p>
-                <p>Source: {article.source.name}</p>
-              </div>
+          {newsData.map((news, index) => (
+            <li key={index}>
+              <img className="news-img" src={news.image} alt="" />
+              <section className="new-title-content-author">
+                <h3 className="news-title">{news.title}</h3>
+                <section className="new-content-author">
+                  <p className="news-description">{news.description}</p>
+                  <p className="news-source">
+                    <strong>Source:</strong> {news.source.name}
+                  </p>
+                </section>
+              </section>
             </li>
           ))}
         </ol>
       )}
     </div>
   );
-}
+};
 
 export default App;
